@@ -1,0 +1,273 @@
+\section*{Problem 1: Gaussian processes [Abu - 40pts]}
+
+\begin{enumerate}
+
+	\item{
+	\textbf{Regression model:}\\
+	
+	\vspace{0.2in}		
+	f(X) $\sim$ N(0, k(X,X) and Y $\sim$ N(f(X), $\sigma^2$I)
+
+	The following covariance functions are considered:
+	\begin{itemize}
+	\item{Linear : $k(x,x') = x.x'$}
+	\item{Squared Exponential : $k(x,x') = exp[\frac{1}{2\lambda^2}(x-x')^2$] }
+	\item{Rational quadratic : $k(x,x') = (1 + (x-x')^2)^-\alpha$}	
+	\end{itemize}
+
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[width = 0.45\textwidth]{images/3-a-Linear.pdf}
+	\hfill
+	\includegraphics[width = 0.45\textwidth]{images/3-a-Squared-Exponential.pdf}
+	\hfill
+	\includegraphics[width = 0.45\textwidth]{images/3-a-Rational-Quadratic.pdf}
+	\caption{1(a). Plot consisting of 3 sample functions, mean function and confidence band for (a) Linear, (b) Squared Exponential, and (c) Rational quadratic.}
+	\label{fig:1a}
+	\end{figure}	
+	
+	The plot is shown in \cref{fig:1a}. The point-wise variance is obtained from the diagonal of the kernel matrix.					
+	}
+	
+	\item{	
+	\textbf{Impact of noise parameter $\sigma$:}\\
+	
+	We pick the 	squared exponential function. The plot is shown in \cref{fig:1b}.  When we increase the Gaussian noise parameter $\sigma$, the output Y has higher variance. The curves are more spiky at higher $\sigma$ values. This makes sense since this is the noise parameter in the model.
+	
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[width = 0.6\textwidth]{images/3-b-Squared-Exponential.pdf}
+	\caption{1(a). Relationship between noise parameter $\sigma$ and output $Y$ for the squared exponential covariance function.}
+	\label{fig:1b}
+	\end{figure}		
+	}	
+
+	\item{ 
+	\textbf{Conditional distribution:}\\
+	$x \sim N(\mu , \Sigma)$ 
+	
+	$\begin{bmatrix}
+	x_{1} \\
+	x_{2}
+	\end{bmatrix} \sim N ( 
+	\begin{bmatrix}
+	\mu_{1} \\
+	\mu_{2}
+	\end{bmatrix} , \begin{bmatrix}
+	\Sigma_{11} & \Sigma_{12} \\
+	\Sigma_{21} & \Sigma_{22}
+	\end{bmatrix} )$\\
+	
+	We want to derive $p(x_{1} | x_{2})$. We will show that $p(x_{1} | x_{2}) \sim N ( \bar{\mu}, \bar{\Sigma})$.\\
+	
+	First, let us denote $\Sigma_{11}$, $\Sigma_{22}$, and $\Sigma_{21}$ by $A$, $B$ and $C$. Since, the covariance matrix is symmetric, $\Sigma_{12}$ is $B'$. Using \textbf{Schur's complement}, we can derive $\bar{\mu}$ and $\bar{\Sigma}$.\\
+	
+	$\begin{bmatrix}
+	A & C' \\
+	C & B
+	\end{bmatrix} \begin{bmatrix}
+	I & 0 \\
+	-B^{-1}C & I
+	\end{bmatrix} =
+	\begin{bmatrix}
+	A - C'B^{-1}C & C' \\
+	0 & B
+	\end{bmatrix}$\\
+		
+	$\begin{bmatrix}
+	A - C'B^{-1}C & C' \\
+	0 & B
+	\end{bmatrix}
+	\begin{bmatrix}
+	(A - C'B^{-1}C)^{-1} & 0 \\
+	0 & B^{-1}
+	\end{bmatrix} =
+	\begin{bmatrix}
+	I & B^{-1}C' \\
+	0 & I
+	\end{bmatrix}$\\
+
+	$\begin{bmatrix}
+	I & B^{-1}C' \\
+	0 & I
+	\end{bmatrix}
+	\begin{bmatrix}
+	I & -C'B^{-1} \\
+	0 & I
+	\end{bmatrix} =
+	\begin{bmatrix}
+	I & 0 \\
+	0 & I
+	\end{bmatrix}$\\
+
+	Therefore, \\
+	
+	$\begin{bmatrix}
+	A & C' \\
+	C & B
+	\end{bmatrix}^{-1}
+	=
+	\begin{bmatrix}
+	I & 0 \\
+	-B^{-1}C & I
+	\end{bmatrix}
+	\begin{bmatrix}
+	(A - C'B^{-1}C)^{-1} & 0 \\
+	0 & I
+	\end{bmatrix}
+	\begin{bmatrix}
+	I & -C'B^{-1} \\
+	0 & I
+	\end{bmatrix}$\\
+
+	Now, the conditional distribution can be written as:\\
+	
+	$p(x_{1}, x_{2}) \propto exp( -0.5 * 
+	\begin{bmatrix}
+	x_{1} - \mu_{1} \\
+	x_{2} - \mu_{2} 
+	\end{bmatrix}'
+	\begin{bmatrix}
+	A & C' \\
+	C & B   
+	\end{bmatrix}^{-1} 
+	\begin{bmatrix}
+	x_{1} - \mu_{1} \\
+	x_{2} - \mu_{2} 
+	\end{bmatrix} )$ \\
+
+	Expanding the inner matrix using schur's complement, we get:\\
+
+$p(x_{1}, x_{2}) \propto exp( -0.5 * 
+	\begin{bmatrix}
+	x_{1} - \mu_{1} \\
+	x_{2} - \mu_{2} 
+	\end{bmatrix}'
+	\begin{bmatrix}
+	I & 0 \\
+	-B^{-1}C & I   
+	\end{bmatrix} 
+	\begin{bmatrix}
+	(A-C'B^{-1}C)^{-1} & 0 \\
+	0 & B^{-1}   
+	\end{bmatrix} 
+	\begin{bmatrix}
+	I & -C'B^{-1} \\
+	0 & I   
+	\end{bmatrix}
+	\begin{bmatrix}
+	x_{1} - \mu_{1} \\
+	x_{2} - \mu_{2} 
+	\end{bmatrix} )$ \\	
+	
+	Multiplying the first two and last two matrices,\\
+
+$p(x_{1}, x_{2}) \propto exp( -0.5 * 
+	\begin{bmatrix}
+	x_{1} - \mu_{1} - C'B^{-1} (x_{2} - \mu_{2}) \\
+	x_{2} - \mu_{2} 
+	\end{bmatrix}'
+	\begin{bmatrix}'
+	(A-C'B^{-1}C)^{-1} & 0 \\
+	0 & B^{-1}   
+	\end{bmatrix} 
+	\begin{bmatrix}
+	x_{1} - \mu_{1} - C'B^{-1} (x_{2} - \mu_{2}) \\
+	x_{2} - \mu_{2} 
+	\end{bmatrix} )$\\ 	
+		
+	As the center matrix is block diagonal, we rewrite this as:\\		
+
+$p(x_{1}, x_{2}) \propto exp( -0.5 * 
+	(x_{1} - \mu_{1} - C'B^{-1} (x_{2} - \mu_{2}))'
+	(A-C'B^{-1}C)^{-1}
+	(x_{1} - \mu_{1} - C'B^{-1} (x_{2} - \mu_{2}))) . exp( -0.5 * (x_{2} - \mu_{2})'B^{-1}(x_{2} - \mu_{2}) )$\\
+
+	Conditioning on $x_{2}$,	 we have :\\		
+	
+	$p(x_{1} | x_{2}) \propto exp( -0.5 * 
+	(x_{1} - \mu_{1} - C'B^{-1} (x_{2} - \mu_{2}))'
+	(A-C'B^{-1}C)^{-1}
+	(x_{1} - \mu_{1} - C'B^{-1} (x_{2} - \mu_{2}))) $\\
+		
+	Therefore, $p(x_{1} | x_{2}) \sim N ( \bar{\mu}, \bar{\Sigma})$, where\\
+	
+	$\bar{\mu} = \mu_{1} + C'B^{-1}(x_{2} - \mu_{2}) =  \mu_{1} + \Sigma_{12}\Sigma_{22}^{-1}(x_{2} - \mu_{2}) \\
+	\bar{\Sigma} = A - C'B^{-1}C = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}$\\
+	
+	
+	This gives the required conditional probability distribution.
+	}
+	
+	\item{
+	Distribution of $f(X) | Y_{*}$ :\\
+	
+	$\begin{bmatrix}
+	f(X) \\
+	Y_{*}
+	\end{bmatrix} \sim N ( 0, 
+	\begin{bmatrix}
+	k(X,X) & k(X,X_{*}) \\
+	k(X_{*},X) & k(X_{*},X_{*}) + \sigma^{2}I	
+	\end{bmatrix} )$	\\	
+		
+	Using the result in previous part, we substitute the following :\\
+	
+	$\mu_{1} = 0$, $\mu_{2} = 0$, $\Sigma_{11} = k(X,X)$, $\Sigma_{12} = k(X,X_{*})$, $\Sigma_{21} = k(X_{*},X)$, $\Sigma_{22} = k(X_{*},X_{*}) + \sigma^{2}I$, and $x_{2} = Y_{*}$\\
+		
+	$f(X) | Y_{*} \sim N ( \bar{\mu}, \bar{\Sigma})$,	where\\	
+	
+	$\bar{\mu} = \mu_{1} + C'B^{-1}(x_{2} - \mu_{2}) =  \mu_{1} + \Sigma_{12}\Sigma_{22}^{-1}(x_{2} - \mu_{2})\\
+		= 0 +  k(X,X_{*})(k(X_{*},X_{*}) + \sigma^{2}I)^{-1} (Y_{*} - 0) \\
+		= k(X,X_{*})(k(X_{*},X_{*}) + \sigma^{2}I)^{-1}Y_{*}$\\
+
+	$\bar{\Sigma} = A - C'B^{-1}C = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21} \\
+		= k(X,X) - (k(X,X_{*})(k(X_{*},X_{*}) + \sigma^{2}I)^{-1}k(X_{*},X)$\\
+
+	This matches the distribution shown in the problem. 			
+	}
+	
+	\item{
+		\textbf{Sampling functions from $p(f(X) | Y_{*})$:}\\
+		
+		The additional information we have are the training points $X_{*}$ and $Y_{*}$. We use the same covariance functions in part a. 
+		\begin{itemize}
+		\item{Linear : $k(x,x') = x.x'$}
+		\item{Squared Exponential : $k(x,x') = exp[\frac{1}{2\lambda^2}(x-x')^2$] }
+		\item{Rational quadratic : $k(x,x') = (1 + (x-x')^2)^-\alpha$}	
+		\end{itemize}
+
+		\begin{figure}[h!]
+		\centering
+		\includegraphics[width = 0.45\textwidth]{images/3-e-Linear.pdf}
+		\hfill
+		\includegraphics[width = 0.45\textwidth]{images/3-e-Squared-Exponential.pdf}
+		\hfill
+		\includegraphics[width = 0.45\textwidth]{images/3-e-Rational-Quadratic.pdf}
+		\caption{1(a). Plot consisting of 3 sampled functions from $p(f(X) | Y_{*})$, the mean function and confidence band for (a) Linear, (b) Squared Exponential, and (c) Rational quadratic.}
+		\label{fig:1e}
+		\end{figure}	
+		
+		The plot is shown in \cref{fig:1e}. The point-wise variance is obtained from the diagonal of the kernel matrix in part d.
+		We observe that the functions pass through the points in the non-linear kernel functions. This shows that they make use of the training points.			
+	}	
+
+	\item{
+		\textbf{$\lambda$ parameter in squared exponential function:}\\
+		
+		The plot in \cref{fig:1f} shows the impact of $\lambda$ on the covariance function. Overall, we observe that as this parameter is increased, the bias increases and the variance decreases, because the confidence band is smaller but the curves don't pass through the training points at higher $\lambda$ values. This makes sense because this parameter is in the denominator of the fraction within the exponential, thereby diminishing the impact of difference between $x$ and $x'$.
+		
+		\begin{figure}[h!]
+		\centering
+		\includegraphics[width = 0.45\textwidth]{images/3-f-Squared-Exponential1.pdf}
+		\hfill
+		\includegraphics[width = 0.45\textwidth]{images/3-f-Squared-Exponential2.pdf}
+		\hfill
+		\includegraphics[width = 0.45\textwidth]{images/3-f-Squared-Exponential3.pdf}
+		\caption{1(a). Plot consisting of 3 sampled functions from $p(f(X) | Y_{*})$, the mean function and confidence band for Squared Exponential kernel function with different $\lambda$ parameters.}
+		\label{fig:1f}
+		\end{figure}			
+	
+	}
+	
+\end{enumerate}

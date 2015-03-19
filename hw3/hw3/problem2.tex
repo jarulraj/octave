@@ -1,0 +1,198 @@
+\section*{Problem 2: Regression [Zichao - 30 pts]}
+
+\begin{enumerate}
+	\item{
+	\textbf{Why Lasso Works ?}\\
+	
+	The optimal parameter vector is given by :\\	
+
+	$\beta^{*} = \argmin_{\beta}  \frac{1}{2} \| y - X\beta \|^{2} + \lambda \| \beta \|_{1}$\\
+	
+	The $L_{1}$ norm is used in the penalty function in lasso regression. This tends to generate sparse $\beta^{*}$ as we will show below.
+	
+	\begin{enumerate}	
+	\item{
+	We have :\\
+		
+		$J_{\lambda}(\beta) = \frac{1}{2} \| y - X\beta \|^{2} + \lambda \| \beta \|_{1} \\
+		=  \frac{1}{2} ( Y - X\beta)'(Y - X\beta) + \lambda \| \beta \|_{1} \\
+		=  \frac{1}{2} ( Y'Y - \beta'X'Y - Y'X\beta + \beta'X'X\beta)  + \lambda \| \beta \|_{1}$\\
+		
+	As the training data is whitened, $X'X = I$. Therefore,\\
+		
+		$J_{\lambda}(\beta) =  \frac{1}{2} ( Y'Y - \beta'X'Y - Y'X\beta + \beta'\beta) + \lambda \| \beta \|_{1} \\
+		= \frac{1}{2} (Y'Y) + \frac{1}{2} (\beta'\beta - 	\beta'X'Y - Y'X\beta ) +  \lambda \| \beta \|_{1} $\\
+		
+	This can be expanded as : \\
+	
+		$J_{\lambda}(\beta) = \frac{1}{2} (y'y) + \sum\limits_{i=1}^d ( \frac{1}{2} * \beta_{i}^{2} - \beta_{i} * y'X_{i} + \lambda * |\beta_{i}|) \\
+		= g(y) + \sum\limits_{i=1}^d f(X_{i},y,\beta_{i},\lambda) $\\
+	
+	Hence, this shows that $\beta_{i}^{*}$ is determined by the $i^{th}$ feature and the output and not by the other features in X.		
+	}		
+	
+	\item{
+	To find the optimal parameter vector $\beta_{i}^{*}$, let's differentiate $J_{\lambda}(\beta)$ with respect to $\beta$	 and set it to 0. Let's first consider the least-squares solution $\beta_{LS}^{*}$. We obtain :\\
+
+	$\frac{d J_{\lambda}(\beta)}{d \beta} = -Y'X + \beta = 0 $ \\ 
+	
+	Thus, $\beta_{LS}^{*} = Y'X $.\\ 
+	
+	Now, if we add in the $L_{1}$ penalty term,\\
+	
+	$\frac{d J_{\lambda}(\beta)}{d \beta} = -Y'X + \beta + \lambda * \frac{d  \| \beta \|_{1}}{\beta}$ \\
+	
+	When  $\beta_{i}^{*} > 0$, we need $\beta_{i} > 0$ since otherwise the sign of the loss function can be changed to get lower value. Now, the derivative of $|\beta|$ with respect to $\beta$ is therefore +1. Thus,\\
+	
+	$\frac{d J_{\lambda}(\beta)}{d \beta} = -Y'X + \beta + \lambda = 0$\\
+	
+	Thus, $\beta_{i}^{*} = y'X_{i} - \lambda = \beta_{LS,i}^{*} - \lambda$.\\
+	
+	We require this solution to be non-negative. Therefore, we can also  rewrite this as  $\beta_{i}^{*} = sign(\beta_{LS,i}^{*})(|\beta_{LS,i}^{*}| - \lambda)^{+}$.\\
+	}	
+	
+	\item{	
+	When  $\beta_{i}^{*} < 0$, we need $\beta_{i} < 0$ since otherwise the sign of the loss function can be changed again to get lower value. Therefore, the derivative of $|\beta|$ with respect to $\beta$ is -1. Thus,\\
+	
+	$\frac{d J_{\lambda}(\beta)}{d \beta} = -Y'X + \beta - \lambda = 0$\\
+	
+	Thus, $\beta_{i}^{*} = y'X_{i} + \lambda = \beta_{LS,i}^{*} + \lambda$\\
+	
+	Again, we can rewrite this as  $\beta_{i}^{*} = sign(\beta_{LS,i}^{*})(|\beta_{LS,i}^{*}| - \lambda)^{+}$, because we require $\beta_{i} < 0$. \\					
+	}
+	
+	\item{		
+	When	  $\lambda > max_{i} | \beta_{i}^{LS} |$, i.e. for large values of $\lambda$, the forms derived above can hold only when $\beta_{LS,i}^{*} = 0$ for all i. Therefore, this makes $\beta_{*}$ a \textbf{sparse vector}. Note that the derivative of $|\beta|$ with respect to $\beta$ is not defined when it 0.	\\
+	
+	When  $\lambda = 0$, clearly $\beta_{i}^{*} = \beta_{LS,i}^{*}$ for all i. That is, it is same as the least squares solution.\\	
+	}
+
+	\item{
+		\textbf{Ridge regression:}
+		
+		$\beta^{*} = \argmin_{\beta}  \frac{1}{2} \| y - X\beta \|^{2} + \frac{1}{2} \lambda \| \beta \|_{2}^{2}$\\
+		
+		Differentiating $J_{\lambda}(\beta)$ with respect to $\beta$ again, we get :\\
+		
+		$-Y'X + X'X\beta + \lambda * \beta = 0$\\
+
+		As the data is whitened, \\
+		
+		$-Y'X + I\beta + \lambda * \beta = 0$\\
+			
+		Now, $\beta_{i}^{*} = \frac{y'X_{i}}{(1 + \lambda)} = \frac{\beta_{LS,i}^{*}}{1 + \lambda}$. \\
+		
+		Thus, when $\lambda$ tends to $\infty$, we get a \textbf{sparse} $\beta^{*}$ vector. And when it tends to 0, we get the least squares solution, i.e. $\beta_{i}^{*} = \beta_{LS,i}^{*}$ for all i.	This explains why it is difficult to get a sparse vector and do automatic variable selection in ridge regression compared to lasso regression.	\\	
+	}
+	
+	\end{enumerate}
+	}					
+
+	\item{
+	\textbf{Bayesian regression and Gaussian process}\\
+
+	The regression model is :\\
+
+	$f(X) = \phi'w$ and $Y = f(X) + \epsilon$\\
+	
+	$\epsilon \sim N(0, \sigma_{n}^{2}I)$\\
+	
+	$w \sim N(0, \Sigma_{p})$, where $\Sigma_{p} = \sigma_{o}^{2}I$ \\
+			
+	\begin{enumerate}
+	\item{
+		\textbf{(a) Posterior distribution :}\\
+		
+		$ p(w | X,Y) \propto P(Y |X,w) * p(w)$, since $p(Y |X)$ is a constant term.\\		
+
+		Now, $w \sim N(0, \Sigma_{p})$. When X and w are fixed, $Y \sim N(f(X), \sigma_{n}^{2})$.\\
+		
+		$ p(w|X,Y)$ is product of gaussians.\\  
+			
+		$ p(w|X,Y) \propto exp(-0.5*(w- \bar{w} )'(\sigma_{n}^{-2}XX' + \Sigma_{p}^{-1})(w- \bar{w} ))$\\			
+
+		Thus, 	$ p(w|X,Y) \sim N (\bar{\mu}, \bar{\Sigma}$, where :\\
+
+		$\bar{\Sigma	} = (\sigma_{n}^{-2}XX' + \Sigma_{p}^{-1})^{-1}$\\	
+
+		$\bar{\mu} = \sigma_{n}^{-2}(\sigma_{n}^{-2}XX' + \Sigma_{p}^{-1})^{-1}XY$\\		
+		
+		This the required mean and covariance of this distribution.
+		
+		\textbf{(b) Predictive distribution :}\\
+
+		$p(f_{*} | X_{*},X,Y) = \int p(f_{*} | X_{*},w) p(w| X,Y) dw$\\
+		
+		Now, we already have the distribution of $p(w| X,Y)$. When $X_{*}$ and $w$ are fixed, $f_{*} = f(X_{*}) = \Phi(X_{*})'w$.
+		
+		Thus, this is a linear transformation of the gaussian conditioned on the given variables. Using the \textbf{affine transformation} of the posterior gaussian distribution, the mean is that of the posterior distribution multiplied by $X_{*}$ and the variance is the quadratic form of $X_{*}$ with the posterior distribution's $\bar{\Sigma}$.\\
+		
+		This is because if $x \sim N(\mu, \Sigma)$ and $y = c + Bx$, then $y \sim N(c + \mu*B, B\Sigma B')$. Thus, \\
+		
+		$p(f_{*} | X_{*},X,Y) \sim N(\bar{\mu}, \bar{\Sigma})$, where :\\
+		
+		$\bar{\Sigma	} = X_{*}'Z^{-1}X_{*}$\\	
+
+		$\bar{\mu} = \sigma_{n}^{-2} X_{*}'Z^{-1}XY_{*}$\\	
+		
+		$ Z  = 	(\sigma_{n}^{-2}XX' + \Sigma_{p}^{-1})$
+		
+		This the required mean and covariance of this distribution. We note the symmetry between the predictive and  posterior distribution.
+	}		
+
+	\item{
+		\textbf{Regression from Gaussian process perspective:}\\
+		
+		The kernel function is $k(x,x') = \sigma_{0}^{2} \phi(x)'\phi(x')$\\
+
+		The result from the previous problem is :\\
+		
+		$\bar{\mu} = k(X,X_{*})(k(X_{*},X_{*}) + \sigma_{n}^{2}I)^{-1}Y_{*}$\\
+		
+		$\bar{\Sigma} = k(X,X) - (k(X,X_{*})(k(X_{*},X_{*}) + \sigma_{n}^{2}I)^{-1}k(X_{*},X)$\\
+			
+		The predictive distribution in the projected space is :\\
+		
+		$p (f_{*} | X_{*},X,Y) = N(\bar{\mu}, \bar{\Sigma}) = N( \sigma_{n}^{-2} \Phi(X_{*})' Z^{-1} \Phi(X)Y, \Phi(X_{*})'Z^{-1}\Phi(X_{*}) )$\\
+		
+		Now, as the kernel function can be written as $K = \sigma_{0}^{2}\Phi'\Phi$, we can rewrite this as :\\
+		
+		$p (f_{*} | X_{*},X,Y) = N(\bar{\mu}, \bar{\Sigma})$ where:\\
+		
+		$\bar{\mu} =  \Phi_{*}'\Sigma_{p}\Phi(K+\sigma_{n}^{2}I)^{-1}Y_{*} $\\
+		
+		$\bar{\Sigma} =  \Phi_{*}'\Sigma_{p}\Phi_{*} - \Phi_{*}'\Sigma_{p}\Phi(K+\sigma_{n}^{2}I)^{-1}\Phi'\Sigma_{p}\Phi_{*}$\\
+		
+		This is the required predictive distribution.			
+	}	
+	
+	\item{
+		\textbf{Mean of gaussian distribution $p (f_{*} | X_{*},X,Y)$ is equivalent in the two previous parts:}\\
+		
+		We have $\mu_{1} = \Phi_{*}'\Sigma_{p}\Phi(K+\sigma_{n}^{2}I)^{-1}Y_{*}$ and $\mu_{2} = \sigma_{n}^{-2} \Phi_{*}' Z^{-1} \Phi Y{*}$.\\
+		
+		By expanding the kernel,\\
+		
+		$\mu_{1} =  \Phi_{*}' \Sigma_{p}\Phi(K+\sigma_{n}^{2}I)^{-1}Y_{*} \\
+		=  \Phi_{*}' \Sigma_{p}\Phi ( \sigma_{0}^{2}\Phi'\Phi +\sigma_{n}^{2}I)^{-1} Y_{*} \\
+		=  \Phi_{*}' \Sigma_{p}\Phi ( \Phi'\Sigma_{p}\Phi +\sigma_{n}^{2}I)^{-1} Y_{*} \\
+		=  \Phi_{*}' \Sigma_{p}( \Phi\Phi'\Sigma_{p}\Phi + \Phi\sigma_{n}^{2}I)^{-1} Y_{*} \\
+		=  \sigma_{n}^{-2} \Phi_{*}' \Sigma_{p}(\sigma_{n}^{-2}\Phi'\Sigma_{p}\Phi + I)^{-1} \Phi Y_{*} \\
+		=  \sigma_{n}^{-2} \Phi_{*}' (\sigma_{n}^{-2}\Phi'\Phi + \Sigma_{p}^{-1}I)^{-1} \Phi Y_{*} \\
+		=  \sigma_{n}^{-2} \Phi_{*}' Z^{-1} \Phi Y_{*} \\
+		= \mu_{2} $	
+		
+		Thus, the two distributions are equivalent.
+	}	
+	
+	\item{
+		\textbf{Form used in prediction : }\\
+		
+		When $D > n$, the number of features is large. Inverting the $D$x$D$ covariance matrix is more expensive than inverting the $n$x$n$ matrix. Thus, we use the kernelized form in part 2. When $D < n$, there are more training points. In this case, we can instead use the predictive distribution in part 1.
+	
+	}
+	
+	\end{enumerate}
+
+	}	
+\end{enumerate}

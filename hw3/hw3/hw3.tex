@@ -1,0 +1,83 @@
+\documentclass{article}
+
+\usepackage{hw}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{multicol}
+\usepackage{paralist}
+\usepackage{todonotes}
+\setlength{\marginparwidth}{2.15cm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{cleveref}
+\usepackage{amsmath}
+
+%\DeclareMathOperator*{\argmin}{arg\,min}
+%\DeclareMathOperator*{\argmax}{arg\,max}
+
+\def \issoln {1}
+
+% Some commands to allow solutions to be embedded in the assignment file.
+\ifcsname issoln\endcsname \else \def\issoln{0} \fi
+\newcommand{\soln}[1]
+{
+  \if\issoln 1
+  \textbf{Solution:}
+  #1
+  \fi
+}
+
+\begin{document}
+
+\section*{}
+\begin{center}
+  \centerline{\textsc{\LARGE Homework 3{\if\issoln 1 Solutions \else \fi}}}
+  \vspace{0.5em}
+  \centerline{\textsc{\Large Regression, Gaussian Processes, And Boosting}}
+  \vspace{1em}
+  \textsc{\large CMU 10-701: Machine Learning (Fall 2014)} \\
+  \url{https://piazza.com/cmu/fall2014/1070115781/home}
+  \vspace{3em}
+  \centerline{\large{Joy Arulraj (jarulraj)}}
+  \vspace{1em}
+\end{center}
+
+\if\issoln 1 \else
+\section*{START HERE: Instructions}
+
+\begin{itemize*}
+
+
+\item \textbf{Late days:} The homework is due Thursday September 25th, at 11:59PM. You have five late days to use throughout the semester, and may use at most three late days on any one assignment. Once the allowed late days are used up, each additional day (or part of a day) will subtract 1 from the normalized score for the assignment. View the full late days policy on \href{https://piazza.com/class/hxwaa1bxuze4xj?cid=10}{Piazza}.
+
+\item \textbf{Collaboration policy:} Collaboration on solving the homework is allowed, after you have thought about the problems on your own.  It is also OK to get inspiration (but not solutions) from books or online resources, again after you have thought about the problems on your own.  There are two requirements: first, cite your collaborators and resources fully and completely (e.g., ``Jane explained to me what is asked in Question 3.4'' or ``I found an explanation of conditional independence on page 17 of Mitchell's textbook'').  Second, write up your solution independently: close the book and all of your notes, and send collaborators out of the room, so that the solution comes directly from you and you alone.
+
+\item \textbf{Programming:} 
+\begin{itemize*}
+\item \textbf{Octave:} You must write your code in Octave. Octave is a free scientific programming language, with syntax identical to that of MATLAB. Installation instructions can be found on the \href{http://www.gnu.org/software/octave/}{Octave website}. (You can develop your code in MATLAB if you prefer, but you \emph{must} test it in Octave before submitting, or it may fail in the autograder.)
+\item \textbf{Autograding:} All programming problems are autograded using the CMU Autolab system. The code which you write will be executed remotely against a suite of tests, and the results used to automatically assign you a grade. To make sure your code executes correctly on our servers, you should avoid using libraries which are not present in the \emph{basic} Octave install.
+\end{itemize*}
+
+\item \textbf{Submitting your work:} All answers will be submitted electronically through the submission website: \url{https://autolab.cs.cmu.edu/10701-f14}. 
+\begin{itemize*}
+\item Start by downloading the \href{https://autolab.cs.cmu.edu/10701-f14/attachments/view/229}{submission template}. The template consists of directory with placeholders for your writeup (``problem1.pdf'', ``problem2.pdf''), and a single sub-directory for the programming parts of the assignment. \emph{Do not modify the structure of these directories or rename these files.} 
+\item \textbf{IMPORTANT:} When you download the template, you should confirm that the autograder is functioning correctly by compressing and submitting the directory provided. This should result in a grade of zero for all programming questions, and an unassigned grade (-) for the written questions. 
+\item \textbf{Writeup:} Replace the placeholders with your actual writeup. Make sure to keep the expected file names (``problem1.pdf''), and to submit one PDF per problem.  To make PDFs, we suggest pdflatex, but just about anything (including handwritten answers) can be converted to PDF using copier-scanners like the ones in the copier rooms of GHC.
+\item \textbf{Code:} For each programming sub-question you will be given a single function signature. You will be asked to write a single Octave function which satisfies the signature. In the handout linked above, the ``code'' folder contains stubs for each of the functions you need to complete. 
+\item \textbf{Putting it all together:} Once you have provided your writeup and completed each of the function stubs, compress the top level directory \emph{as a tar file} and submit to Autolab online (URL above). You may submit your answers as many times as you like. You will receive instant feedback on your autograded problems, and your writeups will be graded by the instructors once the submission deadline has passed. 
+\end{itemize*}
+
+\end{itemize*}
+
+\fi
+
+%\input{problem1}
+\input{problem2}
+
+\end{document}
