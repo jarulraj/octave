@@ -1,0 +1,10 @@
+# Ignore these files
+
+*.tar
+*.pdf
+*.aux
+*.DS_Store
+*.gz
+*.log
+*~
+*._*
